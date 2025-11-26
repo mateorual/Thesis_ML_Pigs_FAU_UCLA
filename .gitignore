@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.env
+
+# Jupyter Notebooks checkpoints
+.ipynb_checkpoints
+
+# ML Data & Models (Adjust extensions as needed)
+*.csv
+*.png
+*.jpg
+*.h5
+*.pt
+*.pth
+/data/
