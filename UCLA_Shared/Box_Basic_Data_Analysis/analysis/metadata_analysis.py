@@ -246,20 +246,47 @@ def create_metadata_visualizations(df, output_dir, subject_col='Subject'):
         visualization_files.append(filename)
         plt.close()
 
-    # 2. Total audios per subject
+    # 2. Total audios per subject (Stacked: Pre vs Post)
     plt.figure(figsize=(10, 6))
-    subject_counts = df[subject_col].value_counts().sort_values(ascending=False)
-    colors = [color_map[subject] for subject in subject_counts.index]
 
-    plt.bar(range(len(subject_counts)), subject_counts.values, color=colors)
+    # Separate pre-op (week 0) and post-op (weeks 1-27)
+    df_with_weeks_plot2 = df[df['Week'].notna()].copy()
+
+    pre_counts = {}
+    post_counts = {}
+    all_subjects_plot2 = sorted(df_with_weeks_plot2[subject_col].unique())
+
+    for subject in all_subjects_plot2:
+        subject_data = df_with_weeks_plot2[df_with_weeks_plot2[subject_col] == subject]
+        pre_counts[subject] = len(subject_data[subject_data['Week'] == 0])
+        post_counts[subject] = len(subject_data[subject_data['Week'] > 0])
+
+    # Sort by total count
+    total_counts = {s: pre_counts[s] + post_counts[s] for s in all_subjects_plot2}
+    sorted_subjects = sorted(all_subjects_plot2, key=lambda x: total_counts[x], reverse=True)
+
+    pre_values = [pre_counts[s] for s in sorted_subjects]
+    post_values = [post_counts[s] for s in sorted_subjects]
+    colors = [color_map[subject] for subject in sorted_subjects]
+
+    x = range(len(sorted_subjects))
+
+    # Create stacked bars with different patterns
+    bars1 = plt.bar(x, pre_values, color=colors, edgecolor='black', linewidth=1.5, label='Pre-op (Week 0)')
+    bars2 = plt.bar(x, post_values, bottom=pre_values, color=colors, edgecolor='black', linewidth=1.5,
+                    hatch='///', label='Post-op (Weeks 1-27)')
+
     plt.xlabel('Subject', fontsize=12, fontweight='bold')
     plt.ylabel('Total Number of Audio Files', fontsize=12, fontweight='bold')
-    plt.title('Total Audio Files per Subject', fontsize=14, fontweight='bold')
-    plt.xticks(range(len(subject_counts)), subject_counts.index, rotation=45, ha='right')
+    plt.title('Total Audio Files per Subject (Pre vs Post Operation)', fontsize=14, fontweight='bold')
+    plt.xticks(x, sorted_subjects, rotation=45, ha='right')
     plt.grid(axis='y', alpha=0.3)
+    plt.legend(loc='upper right')
 
-    for i, v in enumerate(subject_counts.values):
-        plt.text(i, v + 0.5, str(v), ha='center', va='bottom', fontweight='bold')
+    # Add total count labels
+    for i, (pre, post) in enumerate(zip(pre_values, post_values)):
+        total = pre + post
+        plt.text(i, total + 0.5, str(total), ha='center', va='bottom', fontweight='bold')
 
     plt.tight_layout()
     filename = os.path.join(output_dir, '2_total_audio_per_subject.png')
@@ -295,21 +322,47 @@ def create_metadata_visualizations(df, output_dir, subject_col='Subject'):
         visualization_files.append(filename)
         plt.close()
 
-    # 4. Total duration per subject
+    # 4. Total duration per subject (Stacked: Pre vs Post)
     plt.figure(figsize=(10, 6))
-    total_duration = df.groupby(subject_col)['Duration (seconds)'].sum() / 3600  # Convert to hours
-    total_duration = total_duration.sort_values(ascending=False)
-    colors = [color_map[subject] for subject in total_duration.index]
 
-    plt.bar(range(len(total_duration)), total_duration.values, color=colors)
+    # Separate pre-op (week 0) and post-op (weeks 1-27)
+    df_with_weeks_plot4 = df[df['Week'].notna() & df['Duration (seconds)'].notna()].copy()
+
+    pre_duration = {}
+    post_duration = {}
+    all_subjects_plot4 = sorted(df_with_weeks_plot4[subject_col].unique())
+
+    for subject in all_subjects_plot4:
+        subject_data = df_with_weeks_plot4[df_with_weeks_plot4[subject_col] == subject]
+        pre_duration[subject] = subject_data[subject_data['Week'] == 0]['Duration (seconds)'].sum() / 3600
+        post_duration[subject] = subject_data[subject_data['Week'] > 0]['Duration (seconds)'].sum() / 3600
+
+    # Sort by total duration
+    total_duration = {s: pre_duration[s] + post_duration[s] for s in all_subjects_plot4}
+    sorted_subjects = sorted(all_subjects_plot4, key=lambda x: total_duration[x], reverse=True)
+
+    pre_values = [pre_duration[s] for s in sorted_subjects]
+    post_values = [post_duration[s] for s in sorted_subjects]
+    colors = [color_map[subject] for subject in sorted_subjects]
+
+    x = range(len(sorted_subjects))
+
+    # Create stacked bars with different patterns
+    bars1 = plt.bar(x, pre_values, color=colors, edgecolor='black', linewidth=1.5, label='Pre-op (Week 0)')
+    bars2 = plt.bar(x, post_values, bottom=pre_values, color=colors, edgecolor='black', linewidth=1.5,
+                    hatch='///', label='Post-op (Weeks 1-27)')
+
     plt.xlabel('Subject', fontsize=12, fontweight='bold')
     plt.ylabel('Total Duration (hours)', fontsize=12, fontweight='bold')
-    plt.title('Total Recording Duration per Subject', fontsize=14, fontweight='bold')
-    plt.xticks(range(len(total_duration)), total_duration.index, rotation=45, ha='right')
+    plt.title('Total Recording Duration per Subject (Pre vs Post Operation)', fontsize=14, fontweight='bold')
+    plt.xticks(x, sorted_subjects, rotation=45, ha='right')
     plt.grid(axis='y', alpha=0.3)
+    plt.legend(loc='upper right')
 
-    for i, v in enumerate(total_duration.values):
-        plt.text(i, v + 0.1, f'{v:.2f}h', ha='center', va='bottom', fontweight='bold')
+    # Add total duration labels
+    for i, (pre, post) in enumerate(zip(pre_values, post_values)):
+        total = pre + post
+        plt.text(i, total + 0.1, f'{total:.2f}h', ha='center', va='bottom', fontweight='bold')
 
     plt.tight_layout()
     filename = os.path.join(output_dir, '4_total_duration_per_subject.png')
@@ -391,11 +444,11 @@ def create_metadata_visualizations(df, output_dir, subject_col='Subject'):
                                               fill=True, color='lightgray',
                                               edgecolor='white', linewidth=1.5))
                     ax.text(j, i, text, ha='center', va='center',
-                           fontsize=8, fontweight='bold', color='dimgray')
+                           fontsize=8, fontweight='bold', color='black')
                 else:
                     ax.text(j, i, text, ha='center', va='center',
                            fontsize=8, fontweight='bold',
-                           color='white' if heatmap_data[i, j] > 5 else 'black')
+                           color='black')
 
         # Add grid
         ax.set_xticks(np.arange(len(all_weeks))-0.5, minor=True)
@@ -405,7 +458,7 @@ def create_metadata_visualizations(df, output_dir, subject_col='Subject'):
 
         plt.xlabel('Week', fontsize=12, fontweight='bold')
         plt.ylabel('Subject', fontsize=12, fontweight='bold')
-        plt.title('Audio File Count Heatmap (Subject vs Week)\nX = No recordings taken | 0 = Recordings taken but no .wav files',
+        plt.title('Audio File Count Heatmap (Subject vs Week)\nX = No recordings taken | 0 = Recordings had no squeals',
                  fontsize=14, fontweight='bold', pad=20)
 
         plt.tight_layout()
