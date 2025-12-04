@@ -64,7 +64,7 @@ The analysis supports two different folder organization modes, configurable via 
 - Autocorrelation-based pitch detection
 - Optimized for pig vocalizations (50-500 Hz)
 - 30ms snippets with 50% overlap
-- Treatment type grouping (Sham, Bilateral, Unilateral)
+- Treatment type grouping (Scar, Bilateral, Unilateral)
 - Longitudinal analysis (across weeks)
 - Statistical summaries by subject, treatment, and week
 
@@ -172,7 +172,7 @@ Contains sheets:
 
 ## Treatment Types
 
-- **S (Sham)**: Elvis, Cher and Adele
+- **S (Scar)**: Elvis, Cher and Adele
 - **B (Bilateral)**: Frank and Dean, Madonna and Beyonce, Beck and Kurt, Taylor and Gaga
 - **U (Unilateral)**: Michael and Prince, Paul and John
 
