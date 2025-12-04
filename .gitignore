@@ -15,3 +15,11 @@ venv/
 *.pt
 *.pth
 /data/
+
+# Box credentials and output
+box_credentials.txt
+output/
+
+# Temporary files
+*.tmp
+~$*
