@@ -1,5 +1,5 @@
 # Box SDK
-boxsdk>=3.9.0
+boxsdk==3.9.2
 
 # Data processing
 pandas>=1.3.0
