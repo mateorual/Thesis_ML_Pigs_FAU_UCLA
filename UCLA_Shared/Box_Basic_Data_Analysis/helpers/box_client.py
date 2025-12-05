@@ -37,7 +37,7 @@ class BoxClientWrapper:
 
         # Get the potentially new tokens (IMPORTANT: Box gives you a new refresh token too!)
         self.credentials['ACCESS_TOKEN'] = oauth.access_token
-        self.credentials['REFRESH_TOKEN'] = oauth.refresh_token
+        self.credentials['REFRESH_TOKEN'] = oauth._refresh_token
 
     def get_user_info(self):
         """
