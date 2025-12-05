@@ -35,8 +35,9 @@ class BoxClientWrapper:
         # This will automatically refresh the token if expired
         self.client = Client(oauth)
 
-        # Get the potentially new tokens
+        # Get the potentially new tokens (IMPORTANT: Box gives you a new refresh token too!)
         self.credentials['ACCESS_TOKEN'] = oauth.access_token
+        self.credentials['REFRESH_TOKEN'] = oauth.refresh_token
 
     def get_user_info(self):
         """
