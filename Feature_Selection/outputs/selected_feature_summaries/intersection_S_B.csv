@@ -1,0 +1,3 @@
+feature,family,mean_pi_S,decision_S,mean_pi_B,decision_B
+lpcc_9_mean,LPC,1.0,Strong candidate,0.9195,Strong candidate
+mfcc_7_mean,MFCC,0.767,Strong candidate,0.986,Strong candidate

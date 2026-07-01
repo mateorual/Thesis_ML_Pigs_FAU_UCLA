@@ -1,0 +1,6 @@
+feature,family,mean_pi_S,decision_S,mean_pi_U,decision_U
+ddgfcc_0_std,GFCC,0.5605,Moderate candidate,0.553,Moderate candidate
+gfcc_8_mean,GFCC,1.0,Strong candidate,0.9995,Strong candidate
+lpcc_10_mean,LPC,0.8015,Strong candidate,0.9995,Strong candidate
+mfcc_6_mean,MFCC,0.4165,Moderate candidate,0.9855,Strong candidate
+s_contrast_band_7_mean,Spectral,1.0,Strong candidate,0.398,Moderate candidate
