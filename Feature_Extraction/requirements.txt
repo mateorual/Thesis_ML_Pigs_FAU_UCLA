@@ -10,6 +10,12 @@ pandas>=1.3.0
 # Audio processing (used for pitch estimation utilities in svfel.utils.tft)
 librosa>=0.9.0
 
+# Praat bindings, used for the Schlegel21_HNR feature (Praat cross-correlation
+# harmonicity). Imported inside a try/except in main_pig_directory_scan_final.py,
+# so a missing install does NOT raise an error -- it silently leaves
+# Schlegel21_HNR as NaN for every squeal. Install this to get real HNR values.
+praat-parselmouth>=0.4.0
+
 # Used by svfel.features.entropy (KDTree-based entropy estimation)
 scikit-learn>=0.24.0
 
