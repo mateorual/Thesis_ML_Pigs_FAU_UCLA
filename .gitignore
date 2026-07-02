@@ -24,6 +24,10 @@ venv/
 !LMM_Analysis/Path_02/
 !LMM_Analysis/Path_02/**
 
+# Thesis UMAP visualization release artifacts (figures)
+!UMAP_visualization/
+!UMAP_visualization/**
+
 # Box credentials and output
 box_credentials.txt
 output/
