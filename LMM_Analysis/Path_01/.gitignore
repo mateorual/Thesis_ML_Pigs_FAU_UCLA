@@ -1,0 +1,2 @@
+outputs/generated/*
+!outputs/generated/.gitkeep

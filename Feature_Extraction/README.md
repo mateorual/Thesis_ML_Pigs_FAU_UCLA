@@ -17,13 +17,15 @@ Feature_Extraction/
 ├── README.md
 ├── requirements.txt
 ├── scripts/
-│   ├── main_pig_directory_scan_final.py   # Entry point: scans Audio_Snips/, extracts features
+│   ├── main_pig_directory_scan_final.py   # Entry point: scans Audio_Snips/, extracts features;
+│   │                                       #   also directly implements the UCLA (5 features) and
+│   │                                       #   Schlegel21 (7 features) parameter families below
 │   ├── consolidate_features.py            # Merges per-squeal features into one Excel file
-│   ├── a_gat.py                           # Cycle-based perturbation & noise (32 features)
+│   ├── a_gat.py                           # Cycle-based perturbation & noise (37 features)
 │   ├── b_dfg.py                           # Cepstral peak prominence (8 features)
 │   ├── c_temporal.py                      # Temporal cycle descriptors (6 features)
 │   ├── d_spectral.py                      # STFT spectral shape (32 features)
-│   ├── e_cepstral.py                      # MFCC / GFCC / PLPCC / PNCC (72 features each family)
+│   ├── e_cepstral.py                      # MFCC (72) / GFCC (72) / PLPCC (78) / PNCC (72) features
 │   ├── f_lpc.py                           # LPC, LSF, LPCC (86 features)
 │   ├── i_ratio.py                         # Spectral energy ratios (4 features)
 │   └── svfel/                             # Local signal-processing library used by all extractors
@@ -31,6 +33,11 @@ Feature_Extraction/
 ├── Audio_Snips/                           # Not included — see "Input data" below
 └── Consolidated_Features_final.xlsx       # Provided: final consolidated feature matrix (thesis dataset)
 ```
+
+Feature counts above are the raw number of columns each module writes per squeal (verified against
+a sample of the actual extracted output), and sum to 479 across the twelve feature families. The
+released `Consolidated_Features_final.xlsx` has 474 feature columns per squeal — five columns are
+dropped during consolidation; see [Output](#output) below for exactly which ones and why.
 
 `svfel` is a self-contained local package (framing, spectral transforms, filterbanks, cepstral/LPC/
 perturbation primitives) that every extractor module imports. Only the files actually needed by the
@@ -86,7 +93,7 @@ manual step that is not part of this repository. GAT's output mirrors the `Audio
 Detected_Cycles/{Treatment}/week_{N}_{Subject}_{Type}_Snip/{squeal_name}/{squeal_name}@{DDMmmYY}(HH-MM).cycles
 ```
 
-Each `{squeal_name}/` folder can contain more than one `.cycles` file (e.g.\ after re-running GAT
+Each `{squeal_name}/` folder can contain more than one `.cycles` file (e.g. after re-running GAT
 with different settings); the extraction script always uses the most recent one, based on the
 timestamp encoded in the filename.
 
@@ -116,7 +123,7 @@ Extracted_Features_Structured/{Treatment}/{Subject}/week_{N}/{squeal_name}/*.pic
 
 The script is idempotent — if a pickle file already exists for a given squeal and feature family,
 it is not recomputed, so an interrupted run can simply be restarted. Each of the twelve feature
-families is wrapped in its own error handler, so a failure in one family (e.g.\ an LPC fit that
+families is wrapped in its own error handler, so a failure in one family (e.g. an LPC fit that
 does not converge on an unusually short squeal) does not abort extraction for the rest.
 
 ### Step 2 — Consolidate into a single dataset
@@ -134,18 +141,31 @@ Consolidated_Features_final.xlsx
 
 ## Output
 
-`Consolidated_Features_final.xlsx` contains three sheets:
+`Consolidated_Features_final.xlsx` (verified against the file included in this repository) contains
+two sheets:
 
 | Sheet | Contents |
 |---|---|
-| `Features_Data` | One row per squeal: metadata columns (`Squeal`, `Subject`, `Treatment`, `Week`, `Num_Cycles`) followed by all 474 acoustic feature columns, with headers color-coded by source extractor module. |
+| `Features_Data` | 2,357 rows (one per squeal): metadata columns (`Squeal`, `Subject`, `Treatment`, `Week`, `Num_Cycles`) followed by 474 acoustic feature columns, with headers color-coded by source extractor module. |
 | `Parameter_Reference` | Per-extractor listing of every feature column name with a short description. |
-| `Summary` | One row per extractor module: full name, feature count, description, and literature reference. |
 
-Columns with more than 50% missing values across the dataset, and four columns from `a_gat.py`
-with known systematic quality issues (`f0_max`, `f0_min`, `snr1_max`, `snr1_min` — quantization
-and internal ceiling-capping artifacts identified during data auditing), are dropped automatically
-during consolidation.
+`consolidate_features.py` also contains logic to generate a `Summary` sheet (one row per extractor
+module with feature counts and references); the sheet is not present in the shipped
+`Consolidated_Features_final.xlsx`, so `Features_Data` and `Parameter_Reference` are what you will
+actually get from this pipeline as configured.
+
+Two column-dropping rules run automatically during consolidation, together removing 5 of the 479
+raw feature columns for the thesis dataset:
+
+- **Four columns dropped unconditionally**, regardless of dataset, due to known systematic quality
+  issues identified during data auditing: `f0_max` and `f0_min` (quantization / F0-floor artifacts
+  in `a_gat.py`), and `snr1_max` / `snr1_min` (an internal 36 dB ceiling and extreme low outliers in
+  the same module's SNR computation).
+- **Any column with more than 50% missing values** across the dataset is also dropped. For the
+  thesis dataset this additionally removed `nne` (normalized noise energy, also from `a_gat.py`).
+  This rule is dataset-dependent: re-running the pipeline on different recordings may drop a
+  different (possibly empty) set of columns here, so the final feature count for your own dataset
+  is not guaranteed to be exactly 474.
 
 The `Consolidated_Features_final.xlsx` file included in this repository is the exact output used
 as the starting point for the feature-selection and statistical-modeling stages of the thesis
@@ -157,7 +177,7 @@ as the starting point for the feature-selection and statistical-modeling stages 
   max-abs normalized); the porcine-specific `z_ucla_parameters` and `z2_schlegel21_parameters`
   feature families instead operate on the raw WAV file directly.
 - Frame-based extractors use 4096-sample Hanning-windowed frames with 2048-sample hop (~93 ms /
-  ~46 ms at 44.1 kHz), except where noted otherwise (e.g.\ `f_lpc.py` operates on a resampled
+  ~46 ms at 44.1 kHz), except where noted otherwise (e.g. `f_lpc.py` operates on a resampled
   16 kHz signal with 1024/512-sample frames).
 - A detailed, per-parameter rationale for every tunable value in the pipeline (why each cutoff,
   filter range, and window size was chosen for pig squeals rather than left at library defaults
