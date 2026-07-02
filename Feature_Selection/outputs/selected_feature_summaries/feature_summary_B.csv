@@ -1,0 +1,13 @@
+feature,mean_pi_uncapped,alpha_consistency_label,final_decision,family,group
+lsf_5_mean,1.0,High,Strong candidate,LPC,B
+mfcc_1_mean,1.0,High,Strong candidate,MFCC,B
+plpcc_11_mean,0.9995,High,Strong candidate,PLPCC,B
+gfcc_10_mean,0.9895,High,Strong candidate,GFCC,B
+mfcc_7_mean,0.986,High,Strong candidate,MFCC,B
+lpcc_8_mean,0.9425,High,Strong candidate,LPC,B
+lpcc_9_mean,0.9195,High,Strong candidate,LPC,B
+lpcc_9_std,0.839,High,Strong candidate,LPC,B
+lsf_12_std,0.8285,High,Strong candidate,LPC,B
+plpcc_7_mean,0.8205,High,Strong candidate,PLPCC,B
+lpc_3_mean,0.758,High,Strong candidate,LPC,B
+lpcc_2_mean,0.6839999999999999,High,Strong candidate,LPC,B

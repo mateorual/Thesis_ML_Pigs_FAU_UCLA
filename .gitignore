@@ -16,6 +16,10 @@ venv/
 *.pth
 /data/
 
+# Thesis feature-selection release artifacts
+!Feature_Selection/outputs/
+!Feature_Selection/outputs/**
+
 # Box credentials and output
 box_credentials.txt
 output/
