@@ -1,0 +1,52 @@
+# Reference documentation of the pipeline's configuration. Not read
+# programmatically by any script (the scripts under scripts/ hardcode these
+# same values directly) -- this file documents them in one place for readers.
+# Edits here do not change pipeline behavior; edit scripts/00_setup.R instead.
+project:
+  name: "LMM Analysis — S vs U Pig Vocalization Acoustic Features"
+  root: "." # Path_02/ repository root; scripts assume this is the working directory
+  r_version: "4.5.2"
+
+input:
+  file: "Selected_Features_Groups_S_U_v1.xlsx"
+  sheet: "Features_Data"
+  pig_id_col: "Pig_ID"       # renamed to Subject throughout
+  n_metadata_cols: 5
+  expected_n_features: 50
+
+treatments:
+  levels: ["S", "U"]
+  reference: "S"
+  S_pigs: ["Barry and Stevie", "Cher and Adele", "Elvis", "Snoop and Dre"]
+  U_pigs: ["Michael and Prince", "Paul and John", "Tina and Aretha"]
+
+stages:
+  levels: ["Pre", "Early Post", "Mid Post", "Late Post"]
+  reference: "Pre"
+  type: "unordered_factor"   # unordered for Type III tests
+
+model:
+  formula: "feature ~ Stage * Treatment + (1 | Subject)"
+  estimator: "REML"
+  ddf_method: "Satterthwaite"
+  fallback_formula: "feature ~ Stage + Treatment + (1 | Subject)"
+
+multiple_testing:
+  methods: ["BH", "BY"]
+  primary_term: "Stage:Treatment"
+  apply_to: ["Stage", "Treatment", "Stage:Treatment"]
+
+pairwise_contrasts:
+  adjustment: "BH"
+  label: "exploratory_post_hoc"
+
+secondary_tests:
+  kruskal_wallis_adjustment: "BH"
+  wilcoxon_adjustment: "BY"
+  label: "descriptive_secondary_only"
+
+outputs:
+  seed: 42
+  figure_dpi: 150
+  figure_width: 7
+  figure_height: 4.5

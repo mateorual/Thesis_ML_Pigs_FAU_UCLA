@@ -1,0 +1,17 @@
+Statistical Analysis
+------------------------------------------------------------
+
+Acoustic parameter values were analyzed at the squeal level. For each of the 50 acoustic features, linear mixed-effects regression was performed using the lme4/lmerTest packages in R (version 4.5.2). Fixed effects were Stage (categorical: Pre, Early Post, Mid Post, Late Post), Treatment (S vs U), and their interaction (Stage × Treatment). Pig_ID (pig pair) was included as a random intercept to account for repeated measurements within the same pig pair, as individual squeals from the same pair are not independent.
+
+Stage was modeled as an unordered categorical factor to align with the clinically defined perioperative periods, because recordings were sparse and irregularly spaced across weeks. Models were estimated using restricted maximum likelihood (REML) with Satterthwaite degrees-of-freedom approximation for fixed-effect tests (Type III F-statistics).
+
+Raw observed means and standard errors are reported for direct interpretability. Least-squares means (LS means / estimated marginal means) and 95% confidence intervals, estimated using the emmeans package, are additionally reported because the dataset is unbalanced with respect to pig pair and recording stage.
+
+The Stage × Treatment interaction p-value is the primary inferential focus, addressing whether the trajectory of acoustic feature change across stages differs between treatment groups. Omnibus p-values for all three fixed effects were adjusted for multiple comparisons across 50 features using both Benjamini-Hochberg (BH) and Benjamini-Yekutieli (BY) procedures.
+
+Exploratory post-hoc pairwise contrasts (Treatment S vs U within each Stage; Stage comparisons within each Treatment) were computed from the model-based marginal means using BH adjustment and are reported as secondary outputs.
+
+Pair-level Wilcoxon rank-sum analyses (Pre vs each post-operative stage within each pig pair) are included as descriptive/supportive analyses only. These tests assume independent observations and therefore do not fully account for the repeated-measures structure; they should not be interpreted as primary evidence of treatment effects.
+
+Models that failed to converge or exhibited singular fits (random-effect variance at the boundary) are flagged in the results. Singular fits were treated as a diagnostic indicator and results interpreted cautiously, as they may reflect insufficient variation at the pig-pair level for some features.
+

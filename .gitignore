@@ -20,6 +20,10 @@ venv/
 !Feature_Selection/outputs/
 !Feature_Selection/outputs/**
 
+# Thesis LMM analysis release artifacts (Path_02: figures, diagnostics, tables)
+!LMM_Analysis/Path_02/
+!LMM_Analysis/Path_02/**
+
 # Box credentials and output
 box_credentials.txt
 output/

@@ -1,0 +1,27 @@
+"Subject","Treatment","Stage","n_squeals"
+"Barry and Stevie","S","Pre",14
+"Barry and Stevie","S","Mid Post",5
+"Barry and Stevie","S","Late Post",29
+"Cher and Adele","S","Pre",49
+"Cher and Adele","S","Early Post",170
+"Cher and Adele","S","Mid Post",73
+"Cher and Adele","S","Late Post",304
+"Elvis","S","Pre",25
+"Elvis","S","Early Post",65
+"Elvis","S","Late Post",40
+"Snoop and Dre","S","Pre",3
+"Snoop and Dre","S","Early Post",30
+"Snoop and Dre","S","Mid Post",16
+"Snoop and Dre","S","Late Post",85
+"Michael and Prince","U","Pre",28
+"Michael and Prince","U","Early Post",31
+"Michael and Prince","U","Mid Post",34
+"Michael and Prince","U","Late Post",8
+"Paul and John","U","Pre",33
+"Paul and John","U","Early Post",20
+"Paul and John","U","Mid Post",1
+"Paul and John","U","Late Post",13
+"Tina and Aretha","U","Pre",29
+"Tina and Aretha","U","Early Post",5
+"Tina and Aretha","U","Mid Post",1
+"Tina and Aretha","U","Late Post",375
